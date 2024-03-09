@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TaskList from './TaskList'; 
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
@@ -15,7 +16,7 @@ const TaskManager = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('/api/tasks'); // Предположим, что ваш серверный API находится по адресу '/api/tasks'
+      const response = await axios.get('/api/tasks'); 
       setTasks(response.data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -39,35 +40,6 @@ const TaskManager = () => {
     } catch (error) {
       console.error('Error adding task:', error);
     }
-  };
-
-  const renderTaskList = () => {
-    return (
-      <div>
-        <h2>Task List</h2>
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id} onClick={() => handleTaskSelect(task)}>
-              {task.title}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
-  const renderTaskDetail = () => {
-    return (
-      <div>
-        <h2>Task Detail</h2>
-        {selectedTask && (
-          <div>
-            <h3>{selectedTask.title}</h3>
-            <p>{selectedTask.description}</p>
-          </div>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -94,8 +66,14 @@ const TaskManager = () => {
         </form>
       </div>
       <div>
-        {renderTaskList()}
-        {renderTaskDetail()}
+        <TaskList tasks={tasks} onSelectTask={handleTaskSelect} />
+        {selectedTask && (
+          <div>
+            <h2>Selected Task</h2>
+            <h3>{selectedTask.title}</h3>
+            <p>{selectedTask.description}</p>
+          </div>
+        )}
       </div>
     </div>
   );
