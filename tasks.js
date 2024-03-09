@@ -57,6 +57,16 @@ router.post('/tasks', [
         res.status(400).json({ message: err.message });
     }
 });
+const newTask = new Task({
+  title: 'Название задачи',
+  description: 'Описание задачи'
+});
+
+newTask.save((err, task) => {
+  if (err) return console.error(err);
+  console.log('Task created:', task);
+});
+
 
 // Обновление задачи
 router.patch('/tasks/:id', async (req, res) => {
