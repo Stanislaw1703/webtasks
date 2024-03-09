@@ -3,6 +3,24 @@ const router = express.Router();
 const Task = require('../models/task');
 const { body, validationResult } = require('express-validator');
 const passport = require('passport');
+const mongoose = require('mongoose');
+
+
+const taskSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  }
+});
+
+// Создаем модель задачи на основе схемы
+const Task = mongoose.model('Task', taskSchema);
+
+module.exports = Task;
 
 // Middleware аутентификации
 router.use(passport.authenticate('jwt', { session: false }));
