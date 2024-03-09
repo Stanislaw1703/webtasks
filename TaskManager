@@ -1,0 +1,104 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const TaskManager = () => {
+  const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: ''
+  });
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get('/api/tasks'); // Предположим, что ваш серверный API находится по адресу '/api/tasks'
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  const handleTaskSelect = (task) => {
+    setSelectedTask(task);
+  };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/tasks', formData);
+      fetchTasks();
+      setFormData({ title: '', description: '' });
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  };
+
+  const renderTaskList = () => {
+    return (
+      <div>
+        <h2>Task List</h2>
+        <ul>
+          {tasks.map((task) => (
+            <li key={task.id} onClick={() => handleTaskSelect(task)}>
+              {task.title}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderTaskDetail = () => {
+    return (
+      <div>
+        <h2>Task Detail</h2>
+        {selectedTask && (
+          <div>
+            <h3>{selectedTask.title}</h3>
+            <p>{selectedTask.description}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <h1>Task Manager</h1>
+      <div>
+        <h2>Add Task</h2>
+        <form onSubmit={handleFormSubmit}>
+          <input
+            type="text"
+            placeholder="Title"
+            name="title"
+            value={formData.title}
+            onChange={handleFormChange}
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleFormChange}
+          />
+          <button type="submit">Add Task</button>
+        </form>
+      </div>
+      <div>
+        {renderTaskList()}
+        {renderTaskDetail()}
+      </div>
+    </div>
+  );
+};
+
+export default TaskManager;
